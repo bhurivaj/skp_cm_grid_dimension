@@ -12,3 +12,6 @@
 - รองรับ SketchUp 2024+ เท่านั้น
 - ลงทะเบียนผ่าน Extension Manager (เปิด/ปิดได้)
 - ขนาด/ตำแหน่งหน้าต่าง dialog เริ่มใหม่ (preferences key ใหม่)
+- (รวมงานที่ยังไม่เคยปล่อยใน Classmat Suite) ตั้ง Label Offset / Label Size / หน่วยของ elevation label ได้จาก dialog
+- วาดเส้น grid เฉพาะระดับต่ำสุด + เส้นนำ elevation ที่ column แรก (เดิมวาดทุกระดับ + เส้นตั้งเชื่อมทุกจุดตัด)
+- หมุน elevation label ให้อ่านจาก Left View (ระนาบ YZ)
