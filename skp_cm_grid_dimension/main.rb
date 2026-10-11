@@ -43,7 +43,11 @@ module SkpCm
       toolbar.show
 
       if legacy_installed?
-        UI.start_timer(1, false) { UI.messagebox(legacy_message) }
+        # Stop the timer first: a modal dialog inside a non-repeating timer makes it repeat (SketchUp API bug)
+        timer_id = UI.start_timer(1, false) do
+          UI.stop_timer(timer_id)
+          UI.messagebox(legacy_message)
+        end
       end
 
       file_loaded(__FILE__)
