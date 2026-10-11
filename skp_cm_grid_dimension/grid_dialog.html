@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Dimension Tool</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #22c55e;
+      --bg: #1e293b;
+      --surface: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #475569;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary), var(--success));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .section {
+      background: var(--surface);
+      padding: 12px;
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    /* Mode Toggle */
+    .mode-toggle {
+      display: flex;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .mode-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Unit selector */
+    .unit-selector {
+      display: flex;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 12px;
+    }
+
+    .unit-btn {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 0.8rem;
+    }
+
+    .unit-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Grid Preview Canvas */
+    .preview-container {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .preview-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-title::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: var(--success);
+      border-radius: 2px;
+    }
+
+    .preview-info {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    #gridCanvas {
+      width: 100%;
+      height: 200px;
+      background: #1a2332;
+      border-radius: 6px;
+      cursor: crosshair;
+    }
+
+    .total-dimensions {
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      text-align: center;
+      color: var(--primary);
+    }
+
+    /* Spacing inputs for variable mode */
+    .spacing-list {
+      max-height: 120px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+
+    .spacing-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .spacing-row label {
+      min-width: 50px;
+      margin-bottom: 0;
+      font-size: 0.75rem;
+    }
+
+    .spacing-row input {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 0.8rem;
+    }
+
+    /* Height Levels */
+    .height-levels-container {
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .height-level {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .height-level input {
+      flex: 1;
+    }
+
+    .height-level .level-label {
+      min-width: 55px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .btn-remove {
+      background: var(--danger);
+      color: white;
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      transition: background 0.2s;
+    }
+
+    .btn-remove:hover {
+      background: var(--danger-hover);
+    }
+
+    .btn-add {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 6px;
+      font-size: 0.8rem;
+    }
+
+    .btn-add:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #1d4ed8);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    /* Hidden sections */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Tooltip */
+    .info-icon {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: var(--border);
+      border-radius: 50%;
+      font-size: 10px;
+      text-align: center;
+      line-height: 14px;
+      cursor: help;
+      margin-left: 4px;
+    }
+
+    /* Compact row */
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>⊞ Grid Dimension Tool</h1>
+
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" data-mode="uniform" onclick="setMode('uniform')">Uniform</button>
+    <button class="mode-btn" data-mode="variable" onclick="setMode('variable')">Variable (ลากปรับ)</button>
+  </div>
+
+  <!-- Unit Selector -->
+  <div class="unit-selector">
+    <button class="unit-btn active" data-unit="mm" onclick="setUnit('mm')">mm</button>
+    <button class="unit-btn" data-unit="cm" onclick="setUnit('cm')">cm</button>
+    <button class="unit-btn" data-unit="m" onclick="setUnit('m')">m</button>
+  </div>
+
+  <!-- Grid Preview (Variable Mode) -->
+  <div class="preview-container" id="previewSection">
+    <div class="preview-header">
+      <div class="preview-title">Preview</div>
+      <div class="preview-info" id="previewInfo">ลากเส้นเพื่อปรับขนาด</div>
+    </div>
+    <canvas id="gridCanvas"></canvas>
+    <div class="total-dimensions" id="totalDimensions">
+      Total: 5000 × 5000 mm
+    </div>
+  </div>
+
+  <!-- Grid Size Section (Uniform Mode) -->
+  <div class="section" id="uniformSection">
+    <div class="section-title">ขนาด Grid</div>
+    <div class="row">
+      <div class="form-group">
+        <label>คอลัมน์ (X)</label>
+        <input type="number" id="columns" min="1" value="5" placeholder="5" onchange="onGridSizeChange()">
+      </div>
+      <div class="form-group">
+        <label>แถว (Y)</label>
+        <input type="number" id="rows" min="1" value="5" placeholder="5" onchange="onGridSizeChange()">
+      </div>
+    </div>
+    <div class="row" id="uniformSpacingRow">
+      <div class="form-group">
+        <label>ความกว้าง (X) <span id="unit-x">mm</span></label>
+        <input type="number" id="spacingX" min="0.1" step="0.1" value="1000" placeholder="1000"
+          onchange="onSpacingChange()">
+      </div>
+      <div class="form-group">
+        <label>ความลึก (Y) <span id="unit-y">mm</span></label>
+        <input type="number" id="spacingY" min="0.1" step="0.1" value="1000" placeholder="1000"
+          onchange="onSpacingChange()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Variable Spacing Section -->
+  <div class="section hidden" id="variableSection">
+    <div class="section-title">ระยะห่างแต่ละช่อง</div>
+    <div class="row">
+      <div>
+        <label>คอลัมน์ (X) <span id="unit-col">mm</span></label>
+        <div class="spacing-list" id="columnSpacings"></div>
+      </div>
+      <div>
+        <label>แถว (Y) <span id="unit-row">mm</span></label>
+        <div class="spacing-list" id="rowSpacings"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Label Settings Section -->
+  <div class="section">
+    <div class="section-title">การตั้งค่า Label</div>
+    <div class="row">
+      <div class="form-group">
+        <label>ระยะ Offset <span id="unit-offset">mm</span></label>
+        <input type="number" id="labelOffset" min="0" step="100" value="300" placeholder="300">
+      </div>
+      <div class="form-group">
+        <label>ขนาดตัวอักษร <span id="unit-size">mm</span></label>
+        <input type="number" id="labelSize" min="50" step="50" value="300" placeholder="300">
+      </div>
+    </div>
+  </div>
+
+  <!-- Height Levels Section -->
+  <div class="section">
+    <div class="section-title">ระดับความสูง (Z) <span class="info-icon" title="เพิ่มหลายระดับความสูงได้">?</span></div>
+    <div class="height-levels-container" id="heightLevels">
+      <div class="height-level" data-level="1">
+        <span class="level-label">ระดับ 1</span>
+        <input type="number" min="0" step="0.1" value="0" placeholder="0">
+        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ">✕</button>
+      </div>
+      <div class="height-level" data-level="2">
+        <span class="level-label">ระดับ 2</span>
+        <input type="number" min="0" step="0.1" value="3000" placeholder="3000">
+        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ">✕</button>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addLevel()">+ เพิ่มระดับ</button>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="button-group">
+    <button class="btn btn-secondary" onclick="cancel()">ยกเลิก</button>
+    <button class="btn btn-primary" onclick="generateGrid()">สร้าง Grid</button>
+  </div>
+
+  <script>
+    // State
+    let currentMode = 'uniform';
+    let currentUnit = 'mm';
+    let levelCounter = 2;
+
+    // Grid data
+    let columns = 5;
+    let rows = 5;
+    let columnSpacings = [1000, 1000, 1000, 1000, 1000];
+    let rowSpacings = [1000, 1000, 1000, 1000, 1000];
+
+    // Canvas state
+    let canvas, ctx;
+    let isDragging = false;
+    let dragType = null; // 'column' or 'row'
+    let dragIndex = -1;
+    let canvasScale = 1;
+    let gridOffsetX = 40;
+    let gridOffsetY = 30;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      canvas = document.getElementById('gridCanvas');
+      ctx = canvas.getContext('2d');
+
+      // Set canvas size
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Canvas events
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      canvas.addEventListener('mouseup', onMouseUp);
+      canvas.addEventListener('mouseleave', onMouseUp);
+
+      // Initial render
+      updateVariableInputs();
+      drawGrid();
+      updateTotalDimensions();
+    });
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * 2;
+      canvas.height = rect.height * 2;
+      ctx.scale(2, 2);
+      drawGrid();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      const uniformSection = document.getElementById('uniformSection');
+      const variableSection = document.getElementById('variableSection');
+      const uniformSpacingRow = document.getElementById('uniformSpacingRow');
+      const previewInfo = document.getElementById('previewInfo');
+
+      if (mode === 'variable') {
+        uniformSpacingRow.classList.add('hidden');
+        variableSection.classList.remove('hidden');
+        previewInfo.textContent = 'ลากเส้นเพื่อปรับขนาด';
+        updateVariableInputs();
+      } else {
+        uniformSpacingRow.classList.remove('hidden');
+        variableSection.classList.add('hidden');
+        previewInfo.textContent = 'Preview';
+        syncFromUniform();
+      }
+
+      drawGrid();
+      updateTotalDimensions();
+    }
+
+    function setUnit(unit) {
+      currentUnit = unit;
+      document.querySelectorAll('.unit-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.unit === unit);
+      });
+      document.getElementById('unit-x').textContent = unit;
+      document.getElementById('unit-y').textContent = unit;
+      document.getElementById('unit-col').textContent = unit;
+      document.getElementById('unit-row').textContent = unit;
+      document.getElementById('unit-offset').textContent = unit;
+      document.getElementById('unit-size').textContent = unit;
+    }
+
+    function onGridSizeChange() {
+      const newCols = parseInt(document.getElementById('columns').value) || 1;
+      const newRows = parseInt(document.getElementById('rows').value) || 1;
+
+      // Adjust column spacings array
+      while (columnSpacings.length < newCols) {
+        columnSpacings.push(columnSpacings[columnSpacings.length - 1] || 1000);
+      }
+      while (columnSpacings.length > newCols) {
+        columnSpacings.pop();
+      }
+
+      // Adjust row spacings array
+      while (rowSpacings.length < newRows) {
+        rowSpacings.push(rowSpacings[rowSpacings.length - 1] || 1000);
+      }
+      while (rowSpacings.length > newRows) {
+        rowSpacings.pop();
+      }
+
+      columns = newCols;
+      rows = newRows;
+
+      updateVariableInputs();
+      drawGrid();
+      updateTotalDimensions();
+    }
+
+    function onSpacingChange() {
+      if (currentMode === 'uniform') {
+        syncFromUniform();
+        drawGrid();
+        updateTotalDimensions();
+      }
+    }
+
+    function syncFromUniform() {
+      const spacingX = parseFloat(document.getElementById('spacingX').value) || 1000;
+      const spacingY = parseFloat(document.getElementById('spacingY').value) || 1000;
+
+      columnSpacings = columnSpacings.map(() => convertToMm(spacingX));
+      rowSpacings = rowSpacings.map(() => convertToMm(spacingY));
+    }
+
+    function updateVariableInputs() {
+      const colContainer = document.getElementById('columnSpacings');
+      const rowContainer = document.getElementById('rowSpacings');
+
+      // Column spacings
+      colContainer.innerHTML = '';
+      columnSpacings.forEach((spacing, i) => {
+        colContainer.innerHTML += `
+          <div class="spacing-row">
+            <label>${i + 1}:</label>
+            <input type="number" min="100" step="100" value="${displayValue(spacing)}" 
+                   onchange="updateColumnSpacing(${i}, this.value)">
+          </div>
+        `;
+      });
+
+      // Row spacings
+      rowContainer.innerHTML = '';
+      rowSpacings.forEach((spacing, i) => {
+        rowContainer.innerHTML += `
+          <div class="spacing-row">
+            <label>${String.fromCharCode(65 + i)}:</label>
+            <input type="number" min="100" step="100" value="${displayValue(spacing)}" 
+                   onchange="updateRowSpacing(${i}, this.value)">
+          </div>
+        `;
+      });
+    }
+
+    function displayValue(mmValue) {
+      switch (currentUnit) {
+        case 'cm': return mmValue / 10;
+        case 'm': return mmValue / 1000;
+        default: return mmValue;
+      }
+    }
+
+    function updateColumnSpacing(index, value) {
+      columnSpacings[index] = convertToMm(parseFloat(value) || 1000);
+      drawGrid();
+      updateTotalDimensions();
+    }
+
+    function updateRowSpacing(index, value) {
+      rowSpacings[index] = convertToMm(parseFloat(value) || 1000);
+      drawGrid();
+      updateTotalDimensions();
+    }
+
+    function convertToMm(value) {
+      switch (currentUnit) {
+        case 'cm': return value * 10;
+        case 'm': return value * 1000;
+        default: return value;
+      }
+    }
+
+    function updateTotalDimensions() {
+      const totalWidth = columnSpacings.reduce((a, b) => a + b, 0);
+      const totalDepth = rowSpacings.reduce((a, b) => a + b, 0);
+
+      let displayWidth, displayDepth, unit;
+      if (totalWidth >= 1000 || totalDepth >= 1000) {
+        displayWidth = (totalWidth / 1000).toFixed(2);
+        displayDepth = (totalDepth / 1000).toFixed(2);
+        unit = 'm';
+      } else {
+        displayWidth = totalWidth;
+        displayDepth = totalDepth;
+        unit = 'mm';
+      }
+
+      document.getElementById('totalDimensions').textContent =
+        `Total: ${displayWidth} × ${displayDepth} ${unit}`;
+    }
+
+    // Canvas Drawing
+    function drawGrid() {
+      if (!ctx) return;
+
+      const width = canvas.width / 2;
+      const height = canvas.height / 2;
+
+      // Clear
+      ctx.fillStyle = '#1a2332';
+      ctx.fillRect(0, 0, width, height);
+
+      // Calculate scale
+      const totalWidth = columnSpacings.reduce((a, b) => a + b, 0);
+      const totalDepth = rowSpacings.reduce((a, b) => a + b, 0);
+
+      const availableWidth = width - gridOffsetX - 20;
+      const availableHeight = height - gridOffsetY - 20;
+
+      canvasScale = Math.min(availableWidth / totalWidth, availableHeight / totalDepth) * 0.9;
+
+      // Draw grid lines
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+
+      // Calculate positions
+      const colPositions = [0];
+      columnSpacings.forEach(s => colPositions.push(colPositions[colPositions.length - 1] + s));
+
+      const rowPositions = [0];
+      rowSpacings.forEach(s => rowPositions.push(rowPositions[rowPositions.length - 1] + s));
+
+      // Draw vertical lines
+      colPositions.forEach((pos, i) => {
+        const x = gridOffsetX + pos * canvasScale;
+        ctx.beginPath();
+        ctx.moveTo(x, gridOffsetY);
+        ctx.lineTo(x, gridOffsetY + totalDepth * canvasScale);
+        ctx.stroke();
+
+        // Column labels (numbers)
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(i + 1), x, gridOffsetY - 8);
+      });
+
+      // Draw horizontal lines
+      rowPositions.forEach((pos, i) => {
+        const y = gridOffsetY + pos * canvasScale;
+        ctx.beginPath();
+        ctx.moveTo(gridOffsetX, y);
+        ctx.lineTo(gridOffsetX + totalWidth * canvasScale, y);
+        ctx.stroke();
+
+        // Row labels (letters)
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(String.fromCharCode(65 + i), gridOffsetX - 8, y + 4);
+      });
+
+      ctx.setLineDash([]);
+
+      // Draw drag handles (only in variable mode)
+      if (currentMode === 'variable') {
+        ctx.fillStyle = '#3b82f6';
+
+        // Column handles (except first and last)
+        for (let i = 1; i < colPositions.length - 1; i++) {
+          const x = gridOffsetX + colPositions[i] * canvasScale;
+          ctx.beginPath();
+          ctx.arc(x, gridOffsetY + totalDepth * canvasScale / 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Row handles (except first and last)
+        for (let i = 1; i < rowPositions.length - 1; i++) {
+          const y = gridOffsetY + rowPositions[i] * canvasScale;
+          ctx.beginPath();
+          ctx.arc(gridOffsetX + totalWidth * canvasScale / 2, y, 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Draw measurements for each cell
+      if (currentMode === 'variable') {
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.7)';
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+
+        // Column widths
+        for (let i = 0; i < columnSpacings.length; i++) {
+          const x1 = gridOffsetX + colPositions[i] * canvasScale;
+          const x2 = gridOffsetX + colPositions[i + 1] * canvasScale;
+          const width_mm = columnSpacings[i];
+          ctx.fillText(formatMeasurement(width_mm), (x1 + x2) / 2, gridOffsetY + totalDepth * canvasScale + 15);
+        }
+
+        // Row heights
+        ctx.textAlign = 'left';
+        for (let i = 0; i < rowSpacings.length; i++) {
+          const y1 = gridOffsetY + rowPositions[i] * canvasScale;
+          const y2 = gridOffsetY + rowPositions[i + 1] * canvasScale;
+          const height_mm = rowSpacings[i];
+          ctx.fillText(formatMeasurement(height_mm), gridOffsetX + totalWidth * canvasScale + 8, (y1 + y2) / 2 + 3);
+        }
+      }
+    }
+
+    function formatMeasurement(mm) {
+      if (mm >= 1000) {
+        return (mm / 1000).toFixed(1) + 'm';
+      }
+      return mm + 'mm';
+    }
+
+    // Mouse handlers for dragging
+    function onMouseDown(e) {
+      if (currentMode !== 'variable') return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Check for column handle hit
+      const colPositions = [0];
+      columnSpacings.forEach(s => colPositions.push(colPositions[colPositions.length - 1] + s));
+
+      for (let i = 1; i < colPositions.length - 1; i++) {
+        const handleX = gridOffsetX + colPositions[i] * canvasScale;
+        if (Math.abs(x - handleX) < 10) {
+          isDragging = true;
+          dragType = 'column';
+          dragIndex = i;
+          return;
+        }
+      }
+
+      // Check for row handle hit
+      const rowPositions = [0];
+      rowSpacings.forEach(s => rowPositions.push(rowPositions[rowPositions.length - 1] + s));
+
+      for (let i = 1; i < rowPositions.length - 1; i++) {
+        const handleY = gridOffsetY + rowPositions[i] * canvasScale;
+        if (Math.abs(y - handleY) < 10) {
+          isDragging = true;
+          dragType = 'row';
+          dragIndex = i;
+          return;
+        }
+      }
+    }
+
+    function onMouseMove(e) {
+      if (!isDragging) {
+        // Update cursor
+        if (currentMode === 'variable') {
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          let nearHandle = false;
+
+          const colPositions = [0];
+          columnSpacings.forEach(s => colPositions.push(colPositions[colPositions.length - 1] + s));
+
+          for (let i = 1; i < colPositions.length - 1; i++) {
+            const handleX = gridOffsetX + colPositions[i] * canvasScale;
+            if (Math.abs(x - handleX) < 10) {
+              canvas.style.cursor = 'ew-resize';
+              nearHandle = true;
+              break;
+            }
+          }
+
+          if (!nearHandle) {
+            const rowPositions = [0];
+            rowSpacings.forEach(s => rowPositions.push(rowPositions[rowPositions.length - 1] + s));
+
+            for (let i = 1; i < rowPositions.length - 1; i++) {
+              const handleY = gridOffsetY + rowPositions[i] * canvasScale;
+              if (Math.abs(y - handleY) < 10) {
+                canvas.style.cursor = 'ns-resize';
+                nearHandle = true;
+                break;
+              }
+            }
+          }
+
+          if (!nearHandle) {
+            canvas.style.cursor = 'crosshair';
+          }
+        }
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+
+      if (dragType === 'column') {
+        const x = e.clientX - rect.left;
+        const newPos = (x - gridOffsetX) / canvasScale;
+
+        // Calculate new spacings
+        const colPositions = [0];
+        columnSpacings.forEach(s => colPositions.push(colPositions[colPositions.length - 1] + s));
+
+        const minSpacing = 100; // minimum 100mm
+        const leftSpacing = Math.max(minSpacing, newPos - colPositions[dragIndex - 1]);
+        const rightSpacing = Math.max(minSpacing, colPositions[dragIndex + 1] - newPos);
+
+        // Only update if both spacings are valid
+        if (leftSpacing >= minSpacing && rightSpacing >= minSpacing) {
+          columnSpacings[dragIndex - 1] = Math.round(leftSpacing);
+          columnSpacings[dragIndex] = Math.round(rightSpacing);
+          updateVariableInputs();
+          drawGrid();
+          updateTotalDimensions();
+        }
+      } else if (dragType === 'row') {
+        const y = e.clientY - rect.top;
+        const newPos = (y - gridOffsetY) / canvasScale;
+
+        const rowPositions = [0];
+        rowSpacings.forEach(s => rowPositions.push(rowPositions[rowPositions.length - 1] + s));
+
+        const minSpacing = 100;
+        const topSpacing = Math.max(minSpacing, newPos - rowPositions[dragIndex - 1]);
+        const bottomSpacing = Math.max(minSpacing, rowPositions[dragIndex + 1] - newPos);
+
+        if (topSpacing >= minSpacing && bottomSpacing >= minSpacing) {
+          rowSpacings[dragIndex - 1] = Math.round(topSpacing);
+          rowSpacings[dragIndex] = Math.round(bottomSpacing);
+          updateVariableInputs();
+          drawGrid();
+          updateTotalDimensions();
+        }
+      }
+    }
+
+    function onMouseUp() {
+      isDragging = false;
+      dragType = null;
+      dragIndex = -1;
+    }
+
+    // Height levels
+    function addLevel() {
+      levelCounter++;
+      const container = document.getElementById('heightLevels');
+      const levelDiv = document.createElement('div');
+      levelDiv.className = 'height-level';
+      levelDiv.dataset.level = levelCounter;
+      levelDiv.innerHTML = `
+        <span class="level-label">ระดับ ${levelCounter}</span>
+        <input type="number" min="0" step="0.1" value="" placeholder="ความสูง">
+        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ">✕</button>
+      `;
+      container.appendChild(levelDiv);
+      levelDiv.querySelector('input').focus();
+    }
+
+    function removeLevel(btn) {
+      const levels = document.querySelectorAll('.height-level');
+      if (levels.length > 1) {
+        btn.closest('.height-level').remove();
+        updateLevelLabels();
+      }
+    }
+
+    function updateLevelLabels() {
+      document.querySelectorAll('.height-level').forEach((level, index) => {
+        level.querySelector('.level-label').textContent = `ระดับ ${index + 1}`;
+        level.dataset.level = index + 1;
+      });
+    }
+
+    function getHeightLevels() {
+      const levels = [];
+      document.querySelectorAll('.height-level input').forEach(input => {
+        const value = parseFloat(input.value);
+        if (!isNaN(value)) {
+          levels.push(value);
+        }
+      });
+      return levels.sort((a, b) => a - b);
+    }
+
+    function generateGrid() {
+      const heightLevels = getHeightLevels().map(h => convertToMm(h));
+
+      if (heightLevels.length === 0) {
+        heightLevels.push(0);
+      }
+
+      const gridConfig = {
+        gridType: currentMode,
+        columns: columns,
+        rows: rows,
+        columnSpacings: columnSpacings,
+        rowSpacings: rowSpacings,
+        spacingX: convertToMm(parseFloat(document.getElementById('spacingX').value) || 1000),
+        spacingY: convertToMm(parseFloat(document.getElementById('spacingY').value) || 1000),
+        heightLevels: heightLevels,
+        labelOffset: convertToMm(parseFloat(document.getElementById('labelOffset').value) || 300),
+        labelSize: convertToMm(parseFloat(document.getElementById('labelSize').value) || 300),
+        displayUnit: currentUnit
+      };
+
+      // Send to SketchUp Ruby
+      window.location = 'skp:generate_grid@' + JSON.stringify(gridConfig);
+    }
+
+    function cancel() {
+      window.location = 'skp:close_dialog';
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        generateGrid();
+      } else if (e.key === 'Escape') {
+        cancel();
+      }
+    });
+  </script>
+</body>
+
+</html>
