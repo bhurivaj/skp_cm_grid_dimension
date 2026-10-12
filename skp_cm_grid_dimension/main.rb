@@ -42,6 +42,12 @@ module SkpCm
       toolbar.add_item(cmd)
       toolbar.show
 
+      # Right-click a grid group → edit its values
+      UI.add_context_menu_handler do |menu|
+        grid = Generator.selected_grid
+        menu.add_item('แก้ไข Grid') { Generator.show_dialog(grid) } if grid
+      end
+
       if legacy_installed?
         # Stop the timer first: a modal dialog inside a non-repeating timer makes it repeat (SketchUp API bug)
         timer_id = UI.start_timer(1, false) do

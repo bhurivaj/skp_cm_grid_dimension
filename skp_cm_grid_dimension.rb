@@ -6,7 +6,7 @@ require 'extensions.rb'
 module SkpCm
   module GridDimension
     PLUGIN_NAME = 'SKP CM Grid Dimension'
-    VERSION = '1.0.0'
+    VERSION = '1.1.0'
 
     file = __FILE__.dup
     file.force_encoding('UTF-8') if file.respond_to?(:force_encoding)
