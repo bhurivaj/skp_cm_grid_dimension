@@ -7,8 +7,13 @@ function addLevel() {
   levelDiv.dataset.level = levelCounter;
   levelDiv.innerHTML = `
     <span class="level-label">ระดับ ${levelCounter}</span>
-    <input type="number" min="0" step="0.1" value="" placeholder="ความสูง">
-    <button class="btn-remove" onclick="removeLevel(this)" title="ลบ">✕</button>
+    <div class="field">
+      <input type="number" min="0" step="0.1" value="" placeholder="ความสูง">
+      <span class="suffix js-unit">${currentUnit}</span>
+    </div>
+    <button class="btn-remove" onclick="removeLevel(this)" title="ลบ" aria-label="ลบ">
+      <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+    </button>
   `;
   container.appendChild(levelDiv);
   levelDiv.querySelector('input').focus();

@@ -10,7 +10,10 @@
 </head>
 
 <body>
-  <h1>⊞ Grid Dimension Tool</h1>
+  <header class="app-header">
+    <svg class="icon" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 6h14M2 12h14M6 2v14M12 2v14"/></svg>
+    <h1>Grid Dimension Tool</h1>
+  </header>
 
   <!-- Mode Toggle -->
   <div class="mode-toggle">
@@ -42,24 +45,30 @@
     <div class="section-title">ขนาด Grid</div>
     <div class="row">
       <div class="form-group">
-        <label>คอลัมน์ (X)</label>
+        <label for="columns">คอลัมน์ (X)</label>
         <input type="number" id="columns" min="1" value="5" placeholder="5" onchange="onGridSizeChange()">
       </div>
       <div class="form-group">
-        <label>แถว (Y)</label>
+        <label for="rows">แถว (Y)</label>
         <input type="number" id="rows" min="1" value="5" placeholder="5" onchange="onGridSizeChange()">
       </div>
     </div>
     <div class="row" id="uniformSpacingRow">
       <div class="form-group">
-        <label>ความกว้าง (X) <span id="unit-x">mm</span></label>
-        <input type="number" id="spacingX" min="0.1" step="0.1" value="1000" placeholder="1000"
-          onchange="onSpacingChange()">
+        <label for="spacingX">ความกว้าง (X)</label>
+        <div class="field">
+          <input type="number" id="spacingX" min="0.1" step="0.1" value="1000" placeholder="1000"
+            onchange="onSpacingChange()">
+          <span class="suffix js-unit" id="unit-x">mm</span>
+        </div>
       </div>
       <div class="form-group">
-        <label>ความลึก (Y) <span id="unit-y">mm</span></label>
-        <input type="number" id="spacingY" min="0.1" step="0.1" value="1000" placeholder="1000"
-          onchange="onSpacingChange()">
+        <label for="spacingY">ความลึก (Y)</label>
+        <div class="field">
+          <input type="number" id="spacingY" min="0.1" step="0.1" value="1000" placeholder="1000"
+            onchange="onSpacingChange()">
+          <span class="suffix js-unit" id="unit-y">mm</span>
+        </div>
       </div>
     </div>
   </div>
@@ -69,11 +78,11 @@
     <div class="section-title">ระยะห่างแต่ละช่อง</div>
     <div class="row">
       <div>
-        <label>คอลัมน์ (X) <span id="unit-col">mm</span></label>
+        <label>คอลัมน์ (X) <span class="js-unit" id="unit-col">mm</span></label>
         <div class="spacing-list" id="columnSpacings"></div>
       </div>
       <div>
-        <label>แถว (Y) <span id="unit-row">mm</span></label>
+        <label>แถว (Y) <span class="js-unit" id="unit-row">mm</span></label>
         <div class="spacing-list" id="rowSpacings"></div>
       </div>
     </div>
@@ -84,32 +93,44 @@
     <div class="section-title">การตั้งค่า Label</div>
     <div class="row">
       <div class="form-group">
-        <label>ระยะ Offset <span id="unit-offset">mm</span></label>
-        <input type="number" id="labelOffset" min="0" step="any" value="300" placeholder="300">
+        <label for="labelOffset">ระยะ Offset</label>
+        <div class="field">
+          <input type="number" id="labelOffset" min="0" step="any" value="300" placeholder="300">
+          <span class="suffix js-unit" id="unit-offset">mm</span>
+        </div>
       </div>
       <div class="form-group">
-        <label>ขนาดตัวอักษร <span id="unit-size">mm</span></label>
-        <input type="number" id="labelSize" min="0" step="any" value="300" placeholder="300">
+        <label for="labelSize">ขนาดตัวอักษร</label>
+        <div class="field">
+          <input type="number" id="labelSize" min="0" step="any" value="300" placeholder="300">
+          <span class="suffix js-unit" id="unit-size">mm</span>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Height Levels Section -->
   <div class="section">
-    <div class="section-title">ระดับความสูง (Z) <span class="info-icon" title="เพิ่มหลายระดับความสูงได้">?</span></div>
+    <div class="section-title">ระดับความสูง (Z) <span class="info-icon" title="เพิ่มหลายระดับความสูงได้"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v3.6M8 5.1v.1"/></svg></span></div>
     <div class="height-levels-container" id="heightLevels">
       <div class="height-level" data-level="1">
         <span class="level-label">ระดับ 1</span>
-        <input type="number" min="0" step="0.1" value="0" placeholder="0">
-        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ">✕</button>
+        <div class="field">
+          <input type="number" min="0" step="0.1" value="0" placeholder="0">
+          <span class="suffix js-unit">mm</span>
+        </div>
+        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ" aria-label="ลบ"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
       </div>
       <div class="height-level" data-level="2">
         <span class="level-label">ระดับ 2</span>
-        <input type="number" min="0" step="0.1" value="3000" placeholder="3000">
-        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ">✕</button>
+        <div class="field">
+          <input type="number" min="0" step="0.1" value="3000" placeholder="3000">
+          <span class="suffix js-unit">mm</span>
+        </div>
+        <button class="btn-remove" onclick="removeLevel(this)" title="ลบ" aria-label="ลบ"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
       </div>
     </div>
-    <button class="btn-add" onclick="addLevel()">+ เพิ่มระดับ</button>
+    <button class="btn-add" onclick="addLevel()"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>เพิ่มระดับ</button>
   </div>
 
   <!-- Action Buttons -->

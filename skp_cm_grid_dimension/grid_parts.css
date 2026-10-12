@@ -1,218 +1,185 @@
-/* Grid Preview Canvas */
+/* Preview sheet, spacing lists, height levels, footer actions */
+
+/* Preview: the drawing sheet */
 .preview-container {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .preview-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: baseline;
+  margin-bottom: 6px;
 }
 
 .preview-title {
-  font-size: 0.85rem;
+  font-size: 13px;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.preview-title::before {
-  content: '';
-  width: 4px;
-  height: 14px;
-  background: var(--success);
-  border-radius: 2px;
 }
 
 .preview-info {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: var(--ink-3);
 }
 
 #gridCanvas {
+  display: block;
   width: 100%;
   height: 200px;
-  background: #1a2332;
-  border-radius: 6px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   cursor: crosshair;
 }
 
 .total-dimensions {
-  margin-top: 8px;
-  padding: 8px;
-  background: rgba(59, 130, 246, 0.1);
-  border-radius: 6px;
-  font-size: 0.8rem;
-  text-align: center;
-  color: var(--primary);
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ink-2);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Spacing inputs for variable mode */
+/* Variable spacing lists */
 .spacing-list {
-  max-height: 120px;
+  max-height: 132px;
   overflow-y: auto;
-  margin-top: 8px;
+  padding-right: 2px;
 }
 
 .spacing-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  margin-bottom: 4px;
 }
 
 .spacing-row label {
-  min-width: 50px;
-  margin-bottom: 0;
-  font-size: 0.75rem;
+  min-width: 22px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
 }
 
-.spacing-row input {
+.spacing-row input[type="number"] {
   flex: 1;
-  padding: 6px 8px;
-  font-size: 0.8rem;
+  height: 28px;
 }
 
-/* Height Levels */
+/* Height levels */
 .height-levels-container {
-  max-height: 120px;
+  max-height: 136px;
   overflow-y: auto;
+  padding-right: 2px;
 }
 
 .height-level {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 6px;
-  animation: fadeIn 0.2s ease;
-}
-
-.height-level input {
-  flex: 1;
 }
 
 .height-level .level-label {
-  min-width: 55px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  min-width: 52px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.height-level .field {
+  flex: 1;
 }
 
 .btn-remove {
-  background: var(--danger);
-  color: white;
-  border: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  transition: background 0.2s;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background 0.15s ease-out, color 0.15s ease-out;
 }
 
 .btn-remove:hover {
-  background: var(--danger-hover);
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .btn-add {
-  width: 100%;
-  padding: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  margin-top: 2px;
+  margin-left: -8px;
+  border: none;
+  border-radius: var(--radius-sm);
   background: transparent;
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  color: var(--text-muted);
+  color: var(--accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 6px;
-  font-size: 0.8rem;
+  transition: background 0.15s ease-out;
 }
 
 .btn-add:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  background: var(--accent-soft);
 }
 
-/* Buttons */
+/* Footer actions stay visible while the form scrolls */
 .button-group {
+  position: sticky;
+  bottom: 0;
   display: flex;
-  gap: 10px;
-  margin-top: 16px;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 0 -16px;
+  padding: 12px 16px 14px;
+  background: var(--ground);
+  border-top: 1px solid var(--line);
 }
 
 .btn {
-  flex: 1;
-  padding: 10px 16px;
-  border: none;
+  height: 32px;
+  padding: 0 16px;
   border-radius: var(--radius);
-  font-size: 0.9rem;
+  font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s ease-out, border-color 0.15s ease-out;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), #1d4ed8);
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  min-width: 112px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--lift);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
 }
 
 .btn-secondary {
+  border: 1px solid var(--line-strong);
   background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--ink);
 }
 
 .btn-secondary:hover {
-  background: var(--border);
-}
-
-/* Hidden sections */
-.hidden {
-  display: none !important;
-}
-
-/* Tooltip */
-.info-icon {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  background: var(--border);
-  border-radius: 50%;
-  font-size: 10px;
-  text-align: center;
-  line-height: 14px;
-  cursor: help;
-  margin-left: 4px;
-}
-
-/* Compact row */
-.row-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
+  border-color: var(--ink-3);
 }

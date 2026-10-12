@@ -15,8 +15,8 @@ let isDragging = false;
 let dragType = null; // 'column' or 'row'
 let dragIndex = -1;
 let canvasScale = 1;
-let gridOffsetX = 40;
-let gridOffsetY = 30;
+let gridOffsetX = 34;
+let gridOffsetY = 32;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function () {
@@ -106,12 +106,7 @@ function applyUnitLabels() {
   document.querySelectorAll('.unit-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.unit === unit);
   });
-  document.getElementById('unit-x').textContent = unit;
-  document.getElementById('unit-y').textContent = unit;
-  document.getElementById('unit-col').textContent = unit;
-  document.getElementById('unit-row').textContent = unit;
-  document.getElementById('unit-offset').textContent = unit;
-  document.getElementById('unit-size').textContent = unit;
+  document.querySelectorAll('.js-unit').forEach(el => { el.textContent = unit; });
 }
 
 function onGridSizeChange() {
